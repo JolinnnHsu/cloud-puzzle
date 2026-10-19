@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#eaf4ff">
+<title>雲朵拼拼｜Cloudy Puzzle</title>
+<style>
+:root{--sky:#eaf4ff;--blue:#b9d9f8;--blue2:#6ea9e7;--deep:#315f99;--ink:#486581;--pink:#f9dce7;--cream:#fff1d8;--white:#fff;--line:#dce8f4;--green:#dff3e7;--shadow:0 12px 32px rgba(76,119,160,.12)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:ui-rounded,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;background:radial-gradient(circle at 10% 5%,#fff 0,transparent 27%),radial-gradient(circle at 90% 12%,#fce8ef 0,transparent 25%),linear-gradient(135deg,#eaf4ff,#f8fbff 55%,#fff5e9);background-attachment:fixed}
+button{font:inherit;cursor:pointer;border:0}
+button:focus-visible{outline:3px solid #477bb8;outline-offset:3px}
+.hidden{display:none!important}
+.app{max-width:1240px;margin:auto;padding:22px 20px 36px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:56px;height:56px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#d9ebff);box-shadow:var(--shadow);font-size:30px}
+h1{margin:0;color:#315f99;font-size:clamp(25px,3vw,36px);letter-spacing:.03em}
+.subtitle{margin:4px 0 0;font-size:13px;color:#7890a8}
+.audio-controls{display:flex;gap:10px;align-items:center}
+.audio-toggle{background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px 13px;color:var(--deep);box-shadow:0 5px 14px #8aa9c41c;font-size:13px;display:flex;align-items:center;gap:7px}
+.audio-toggle[aria-pressed="false"]{opacity:.62;background:#f6f8fb}
+main{min-height:65vh}
+.panel{background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:26px;box-shadow:var(--shadow);padding:clamp(18px,3vw,30px)}
+.screen{animation:fadeUp .28s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:28px;min-height:470px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:99px;background:#eaf4ff;color:#477bb8;font-size:13px;font-weight:700}
+.hero h2{font-size:clamp(34px,5vw,58px);line-height:1.2;color:#315f99;margin:18px 0 12px}
+.hero p{font-size:16px;line-height:1.9;max-width:450px;color:#6f879e}
+.hero-art{position:relative;display:grid;place-items:center;min-height:330px;background:linear-gradient(140deg,#dceeff,#fff0f5);border-radius:28px;overflow:hidden}
+.hero-art:before,.hero-art:after{content:"";position:absolute;border-radius:50%;background:#fff9;filter:blur(1px)}
+.hero-art:before{width:230px;height:230px;right:-35px;top:-45px}.hero-art:after{width:150px;height:150px;left:-35px;bottom:-25px}
+.hero-emoji{position:relative;z-index:1;font-size:clamp(110px,16vw,190px);filter:drop-shadow(0 16px 12px #7999b333);animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:15px;font-weight:750;transition:transform .16s,box-shadow .16s,background .16s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(0)}
+.btn-primary{color:#fff;background:linear-gradient(135deg,#6ea9e7,#477fbe);box-shadow:0 8px 18px #6ea9e744}
+.btn-secondary{background:#f0f7ff;color:var(--deep);border:1px solid #d6e8fa}
+.btn-soft{background:#fff5e7;color:#8e7049;border:1px solid #f3e0c5}
+.btn-pink{background:#f9dce7;color:#a25373}
+.btn-quiet{background:transparent;color:#6f879e}
+.btn-wide{min-width:190px}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:20px}
+.section-head h2{margin:0;color:var(--deep);font-size:clamp(24px,3vw,32px)}
+.section-head p{margin:6px 0 0;color:#7b91a7;font-size:14px}
+.back-link{background:transparent;color:#6e8ca9;font-weight:700;padding:9px 0}
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.theme-card{border:2px solid transparent;background:linear-gradient(145deg,#f7fbff,#fff);border-radius:24px;padding:20px;text-align:left;box-shadow:0 5px 18px #7195b51a;transition:.2s}
+.theme-card:hover{transform:translateY(-4px);border-color:#b9d9f8;box-shadow:var(--shadow)}
+.theme-art{height:185px;border-radius:18px;display:grid;place-items:center;font-size:100px;margin-bottom:16px}
+.theme-card h3{margin:0 0 6px;color:#315f99;font-size:21px}.theme-card p{margin:0;color:#8297aa;font-size:14px;line-height:1.6}
+.image-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.image-card{background:#fff;border:2px solid #e4edf6;border-radius:18px;padding:8px;text-align:left;transition:.2s;color:var(--deep)}
+.image-card:hover{transform:translateY(-3px);border-color:#9cc8f3}
+.image-card.selected{border-color:#5c9de2;box-shadow:0 0 0 3px #d9ebff}
+.image-card img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px}
+.image-card strong{display:block;padding:9px 4px 3px;font-size:14px}
+.image-card small{display:block;padding:0 4px 4px;color:#91a3b4;font-size:11px}
+.difficulty-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:660px;margin:0 auto}
+.difficulty-card{background:#fff;border:2px solid #e0eaf4;border-radius:22px;padding:24px 18px;text-align:center;transition:.2s}
+.difficulty-card:hover{border-color:#8ebce9;transform:translateY(-3px)}
+.difficulty-card .big{font-size:38px;font-weight:850;color:#477fbe;line-height:1.2}
+.difficulty-card h3{margin:12px 0 6px;color:#315f99}.difficulty-card p{margin:0;color:#8196a9;font-size:13px}
+.game-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:20px;align-items:start}
+.board-panel{padding:clamp(12px,2vw,22px)}
+.board-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.board-title{font-weight:800;color:#315f99;font-size:18px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:99px;background:#edf6ff;color:#5886b6;font-size:12px;font-weight:750}
+.board{width:min(100%,610px);margin:0 auto;display:grid;gap:5px;padding:7px;background:linear-gradient(145deg,#d7e9f8,#fdfefe);border-radius:20px;box-shadow:inset 0 2px 8px #7095b522}
+.tile{position:relative;min-width:0;aspect-ratio:1;border:0;padding:0;border-radius:8px;overflow:hidden;background:#e5eff8;box-shadow:0 2px 4px #6d8aa51c;transition:transform .14s,box-shadow .14s;touch-action:manipulation}
+.tile img{width:100%;height:100%;display:block;object-fit:cover;pointer-events:none}
+.tile.empty{background:linear-gradient(145deg,#eaf1f8,#dbe8f4);box-shadow:inset 0 2px 8px #9eb5cb3a;border:1px dashed #b4c8dc}
+.tile.movable:hover{outline:3px solid #91c4f3;outline-offset:-3px;filter:brightness(1.02)}
+.tile.hint{outline:4px solid #f0bd5d;outline-offset:-4px;animation:hintPulse .8s ease-in-out 2}
+@keyframes hintPulse{50%{box-shadow:inset 0 0 0 7px #fff2a966;transform:scale(.97)}}
+.tile.last-move{animation:tilePop .22s ease}
+@keyframes tilePop{50%{transform:scale(.94)}}
+.game-side{display:flex;flex-direction:column;gap:14px}
+.side-card{background:#fff;border:1px solid #e5edf5;border-radius:20px;padding:15px}
+.side-card h3{margin:0 0 12px;font-size:15px;color:#315f99}
+.preview-btn{display:block;width:100%;position:relative;padding:0;background:#f3f8fd;border-radius:13px;overflow:hidden;border:1px solid #dbe8f5}
+.preview-btn img{display:block;width:100%;aspect-ratio:1.3;object-fit:cover}
+.preview-hint{position:absolute;inset:auto 8px 8px;background:#ffffffdf;border-radius:99px;padding:6px 10px;font-size:12px;color:#477fbe;font-weight:800}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#f4f9ff;border-radius:14px;padding:12px 10px}
+.stat span{display:block;color:#8197aa;font-size:12px;margin-bottom:5px}.stat strong{font-size:24px;color:#315f99;font-variant-numeric:tabular-nums}
+.best-row{font-size:13px;color:#738ca3;line-height:1.7}.best-row strong{color:#315f99}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.actions .btn{padding:11px 9px;font-size:13px}
+.help{font-size:12px;line-height:1.8;color:#8297aa;margin:10px 0 0}
+.footer-note{text-align:center;color:#91a4b5;font-size:12px;margin:24px 0 0}
+.modal-backdrop{position:fixed;inset:0;z-index:20;background:#29476599;backdrop-filter:blur(5px);display:grid;place-items:center;padding:20px;animation:fadeUp .2s ease}
+.modal{background:#fff;border-radius:24px;padding:16px;max-width:min(90vw,620px);width:100%;box-shadow:0 24px 80px #23496a55}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;color:#315f99;font-weight:800}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:#edf6ff;color:#477fbe;font-size:21px}
+.modal-img{display:block;max-height:70vh;width:100%;object-fit:contain;border-radius:16px;background:#f4f8fc}
+.win-modal{text-align:center;max-width:470px;padding:28px}
+.win-stars{font-size:38px;letter-spacing:8px;animation:float 2.5s ease-in-out infinite}
+.win-title{color:#315f99;font-size:30px;margin:8px 0}
+.win-image{width:145px;height:145px;object-fit:cover;border-radius:25px;box-shadow:var(--shadow);margin:5px auto 12px}
+.win-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.win-stat{background:#f1f7ff;border-radius:15px;padding:12px}
+.win-stat span{display:block;font-size:12px;color:#8297aa}.win-stat strong{display:block;font-size:23px;color:#315f99;margin-top:4px}
+.win-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#315f99;color:#fff;padding:11px 16px;border-radius:99px;box-shadow:var(--shadow);z-index:40;font-size:13px;animation:fadeUp .2s ease}
+@media(max-width:900px){.image-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.game-layout{grid-template-columns:minmax(0,1fr) 240px}.hero{gap:18px}}
+@media(max-width:700px){.app{padding:14px 12px 28px}.topbar{align-items:flex-start;flex-direction:column}.audio-controls{width:100%}.audio-toggle{flex:1;justify-content:center}.hero{grid-template-columns:1fr}.hero-art{min-height:230px;grid-row:1}.hero-emoji{font-size:125px}.hero-copy{text-align:center}.hero-copy p{margin-left:auto;margin-right:auto}.hero-copy .btn{width:100%}.theme-grid{grid-template-columns:1fr}.theme-art{height:135px;font-size:75px}.image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.game-layout{grid-template-columns:1fr}.game-side{display:grid;grid-template-columns:1fr 1fr}.game-side .side-card:first-child{grid-column:1/-1}.board{gap:4px;padding:5px;border-radius:14px}.tile{border-radius:5px}.board-panel{padding:10px}.section-head{align-items:flex-start;flex-direction:column}.difficulty-card{padding:18px 10px}.difficulty-card .big{font-size:32px}}
+@media(max-width:390px){.game-side{grid-template-columns:1fr}.game-side .side-card:first-child{grid-column:auto}.actions .btn{font-size:12px}.stats{gap:6px}.stat strong{font-size:21px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="brand-icon" aria-hidden="true">🧩</div><div><h1>雲朵拼拼</h1><p class="subtitle">Cloudy Puzzle · 拼起一點可愛，收集一整天的好心情 ☁️</p></div></div>
+  <div class="audio-controls">
+    <button class="audio-toggle" id="musicToggle" aria-pressed="false" title="切換背景音樂">🎵 <span>背景音樂</span> <b id="musicState">關</b></button>
+    <button class="audio-toggle" id="sfxToggle" aria-pressed="true" title="切換遊戲音效">🔔 <span>遊戲音效</span> <b id="sfxState">開</b></button>
+  </div>
+</header>
+<main id="main">
+  <section class="screen panel hero" id="homeScreen">
+    <div class="hero-copy">
+      <span class="eyebrow">☁️ 一點點可愛，一點點放鬆</span>
+      <h2>今天也要<br>拼出好心情！</h2>
+      <p>挑選喜歡的動物或甜點，把散落的拼圖片慢慢拼回原樣。沒有時間壓力，享受每一次小小的完成。</p>
+      <button class="btn btn-primary btn-wide" id="startBtn">開始遊戲 <span aria-hidden="true">→</span></button>
+    </div>
+    <div class="hero-art" aria-label="可愛拼圖插畫"><div class="hero-emoji">🐻🧩</div></div>
+  </section>
+
+  <section class="screen panel hidden" id="themeScreen">
+    <div class="section-head"><div><h2>想玩哪一種呢？</h2><p>先選一個喜歡的主題吧。</p></div><button class="back-link" data-go="home">← 回首頁</button></div>
+    <div class="theme-grid">
+      <button class="theme-card" data-theme="animal"><div class="theme-art" style="background:linear-gradient(135deg,#dceeff,#f9e4ed)">🐻 🐰 🐱</div><h3>可愛動物</h3><p>小熊、兔兔、貓咪與其他療癒朋友<br>共 5 張圖片</p></button>
+      <button class="theme-card" data-theme="food"><div class="theme-art" style="background:linear-gradient(135deg,#fff0d8,#f9dce7)">🥐 🍰 🍮</div><h3>療癒美食</h3><p>甜甜點心與可愛飲品<br>共 5 張圖片</p></button>
+    </div>
+  </section>
+
+  <section class="screen panel hidden" id="imageScreen">
+    <div class="section-head"><div><h2 id="imageHeading">選擇圖片</h2><p>挑一張今天最喜歡的插畫。</p></div><button class="back-link" data-go="theme">← 返回主題</button></div>
+    <div class="image-grid" id="imageGrid"></div>
+  </section>
+
+  <section class="screen panel hidden" id="difficultyScreen">
+    <div class="section-head"><div><h2>選擇拼圖難度</h2><p id="difficultySubtitle">準備好了嗎？選擇你想挑戰的棋盤。</p></div><button class="back-link" data-go="images">← 返回圖片</button></div>
+    <div class="difficulty-grid">
+      <button class="difficulty-card" data-size="3"><div class="big">3 × 3</div><h3>輕鬆入門</h3><p>8 片拼圖＋1 個空白格</p></button>
+      <button class="difficulty-card" data-size="4"><div class="big">4 × 4</div><h3>小小挑戰</h3><p>15 片拼圖＋1 個空白格</p></button>
+    </div>
+  </section>
+
+  <section class="screen hidden" id="gameScreen">
+    <div class="game-layout">
+      <div class="panel board-panel">
+        <div class="board-top"><button class="back-link" data-go="theme">← 選單</button><div class="board-title" id="gameTitle">微笑肉桂捲</div><span class="pill" id="difficultyPill">3 × 3</span></div>
+        <div class="board" id="board" role="group" aria-label="滑塊拼圖棋盤"></div>
+        <p class="help">💡 點擊與空白格相鄰的方塊即可移動，也可以使用鍵盤方向鍵。慢慢來，享受拼圖的過程。</p>
+      </div>
+      <aside class="game-side">
+        <div class="side-card">
+          <h3>🖼️ 原圖預覽</h3>
+          <button class="preview-btn" id="previewBtn" aria-label="點擊放大原圖"><img id="previewImage" alt="目前拼圖完整原圖"><span class="preview-hint">⌕ 點擊放大</span></button>
+        </div>
+        <div class="side-card">
+          <h3>🌷 本局紀錄</h3>
+          <div class="stats">
+            <div class="stat"><span>⏱ 遊戲時間</span><strong id="timer">00:00</strong></div>
+            <div class="stat"><span>👣 移動步數</span><strong id="moves">0</strong></div>
+          </div>
+          <div class="best-row" style="margin-top:12px">🏆 此題最佳紀錄<br><strong id="bestRecord">尚無紀錄</strong></div>
+        </div>
+        <div class="side-card">
+          <h3>✨ 遊戲小工具</h3>
+          <div class="actions">
+            <button class="btn btn-primary" id="hintBtn">💡 提示下一步</button>
+            <button class="btn btn-secondary" id="restartBtn">↻ 重新開始</button>
+            <button class="btn btn-soft" id="changeImageBtn">🖼️ 換一張圖</button>
+            <button class="btn btn-secondary" id="musicInlineBtn">🎵 音樂：關</button>
+          </div>
+          <p class="help">提示會標示建議移動的方塊，不會自動幫你移動，也不會增加步數。</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+<p class="footer-note">☁️ 放鬆心情・享受拼圖的每一刻 ♡</p>
+</div>
+
+<div class="modal-backdrop hidden" id="previewModal" role="dialog" aria-modal="true" aria-label="原圖預覽">
+  <div class="modal"><div class="modal-head"><span id="previewTitle">完整原圖</span><button class="icon-btn" id="closePreview" aria-label="關閉預覽">×</button></div><img class="modal-img" id="modalImage" alt="完整拼圖原圖"></div>
+</div>
+<div class="modal-backdrop hidden" id="winModal" role="dialog" aria-modal="true" aria-label="拼圖完成">
+  <div class="modal win-modal">
+    <div class="win-stars" aria-hidden="true">✦ ✧ ✦</div>
+    <img class="win-image" id="winImage" alt="完成的拼圖">
+    <h2 class="win-title">拼圖完成！</h2>
+    <p id="winMessage">你把每一片都放回了最適合的位置。</p>
+    <div class="win-stats"><div class="win-stat"><span>完成時間</span><strong id="winTime">00:00</strong></div><div class="win-stat"><span>移動步數</span><strong id="winMoves">0</strong></div></div>
+    <p id="recordMessage" class="best-row"></p>
+    <div class="win-actions"><button class="btn btn-primary" id="playAgainBtn">再玩一次</button><button class="btn btn-secondary" id="winChangeBtn">換一張圖片</button><button class="btn btn-quiet" id="winMenuBtn">返回主選單</button></div>
+  </div>
+</div>
+<div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const IMAGES = [{"id": "A1", "name": "小貓咪", "theme": "animal", "src": "images/animal-kitten.jpg"}, {"id": "A2", "name": "柯基犬", "theme": "animal", "src": "images/animal-corgi.jpg"}, {"id": "A3", "name": "小兔子", "theme": "animal", "src": "images/animal-bunny.jpg"}, {"id": "A4", "name": "企鵝", "theme": "animal", "src": "images/animal-penguin.jpg"}, {"id": "A5", "name": "貓熊", "theme": "animal", "src": "images/animal-panda.jpg"}, {"id": "B1", "name": "肉桂捲", "theme": "food", "src": "images/food-cinnamon-roll.jpg"}, {"id": "B2", "name": "鬆餅", "theme": "food", "src": "images/food-pancakes.jpg"}, {"id": "B3", "name": "聖代", "theme": "food", "src": "images/food-parfait.jpg"}, {"id": "B4", "name": "拉麵", "theme": "food", "src": "images/food-ramen.jpg"}, {"id": "B5", "name": "馬卡龍", "theme": "food", "src": "images/food-macarons.jpg"}];
+const $ = (id) => document.getElementById(id);
+const screens = ["homeScreen","themeScreen","imageScreen","difficultyScreen","gameScreen"];
+const STORE_KEY = "cozySlidingPuzzle.v1";
+const settingsKey = "cozySlidingPuzzle.settings.v1";
+let currentTheme = "animal", currentImage = IMAGES[0], size = 3, tiles = [], moves = 0, startedAt = null, elapsedBefore = 0, timerHandle = null, gameState = "ready", hintTimer = null, lastTile = null, toastTimer = null;
+let audioContext = null, musicTimer = null, musicEnabled = false, sfxEnabled = true, musicNodes = [], ambienceNode = null, ambienceGain = null;
+const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function safeGet(key, fallback){try{const value=localStorage.getItem(key);return value?JSON.parse(value):fallback}catch(e){return fallback}}
+function safeSet(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(e){return false}}
+function getRecords(){return safeGet(STORE_KEY,{})}
+function recordKey(){return `${currentImage.id}_${size}x${size}`}
+function formatTime(seconds){seconds=Math.max(0,Math.floor(seconds));const h=Math.floor(seconds/3600),m=Math.floor(seconds%3600/60),s=seconds%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
+function currentElapsed(){return startedAt===null?elapsedBefore:elapsedBefore+(Date.now()-startedAt)/1000}
+function showScreen(id){screens.forEach(s=>$(s).classList.toggle("hidden",s!==id));window.scrollTo({top:0,behavior:reducedMotion?"auto":"smooth"})}
+function goHome(){stopTimer();gameState="ready";showScreen("homeScreen")}
+function goTheme(){stopTimer();gameState="ready";showScreen("themeScreen")}
+function goImages(){stopTimer();renderImageCards();showScreen("imageScreen")}
+function goDifficulty(){stopTimer();$("difficultySubtitle").textContent=`目前選擇：${currentImage.name}。選擇棋盤大小開始遊戲。`;showScreen("difficultyScreen")}
+function chooseTheme(theme){currentTheme=theme;renderImageCards();showScreen("imageScreen")}
+function renderImageCards(){const list=IMAGES.filter(im=>im.theme===currentTheme);$("imageHeading").textContent=currentTheme==="animal"?"🐾 選擇可愛動物":"🍰 選擇療癒美食";$("imageGrid").innerHTML=list.map(im=>`<button class="image-card ${currentImage.id===im.id?"selected":""}" data-image="${im.id}"><img src="${im.src}" alt="${im.name}"><strong>${im.name}</strong><small>${currentImage.id===im.id?"目前選擇":"點擊選擇"}</small></button>`).join("");$("imageGrid").querySelectorAll("[data-image]").forEach(btn=>btn.addEventListener("click",()=>{currentImage=IMAGES.find(im=>im.id===btn.dataset.image);goDifficulty()}))}
+function getGoal(){return Array.from({length:size*size},(_,i)=>i===size*size-1?-1:i)}
+function blankIndex(arr=tiles){return arr.indexOf(-1)}
+function neighbors(index){const r=Math.floor(index/size),c=index%size,out=[];if(r>0)out.push(index-size);if(r<size-1)out.push(index+size);if(c>0)out.push(index-1);if(c<size-1)out.push(index+1);return out}
+function isSolved(arr=tiles){return arr.every((v,i)=>v===(i===arr.length-1?-1:i))}
+function shuffleBoard(){tiles=getGoal();let previous=-1;const steps=size===3?42:100;for(let i=0;i<steps;i++){const blank=blankIndex(),options=neighbors(blank).filter(n=>n!==previous);const next=options[Math.floor(Math.random()*options.length)];[tiles[blank],tiles[next]]=[tiles[next],tiles[blank]];previous=blank}if(isSolved())shuffleBoard()}
+function startGame(){stopTimer();size=Number(size);moves=0;startedAt=null;elapsedBefore=0;gameState="ready";lastTile=null;shuffleBoard();$("gameTitle").textContent=currentImage.name;$("difficultyPill").textContent=`${size} × ${size}`;$("previewImage").src=currentImage.src;$("previewImage").alt=currentImage.name+"完整原圖";$("previewTitle").textContent=currentImage.name+"｜完整原圖";$("timer").textContent="00:00";$("moves").textContent="0";updateBest();renderBoard();showScreen("gameScreen");if(musicEnabled)startMusic()}
+function renderBoard(){const board=$("board");board.style.gridTemplateColumns=`repeat(${size},minmax(0,1fr))`;board.innerHTML="";tiles.forEach((tile,index)=>{const btn=document.createElement("button");btn.className="tile";btn.dataset.index=index;btn.setAttribute("aria-label",tile===-1?"空白格":`拼圖第 ${tile+1} 塊`);if(tile===-1){btn.classList.add("empty");btn.disabled=true;btn.setAttribute("aria-label","空白格")}else{const img=document.createElement("img");img.src=currentImage.src;img.alt="";img.draggable=false;const col=tile%size,row=Math.floor(tile/size);img.style.width=`${size*100}%`;img.style.height=`${size*100}%`;img.style.maxWidth="none";img.style.maxHeight="none";img.style.position="absolute";img.style.left=`-${col*100}%`;img.style.top=`-${row*100}%`;btn.style.position="relative";btn.appendChild(img);if(neighbors(blankIndex()).includes(index))btn.classList.add("movable");btn.addEventListener("click",()=>moveTile(index))}if(lastTile===index)btn.classList.add("last-move");board.appendChild(btn)})}
+function startTimerIfNeeded(){if(startedAt===null){startedAt=Date.now();timerHandle=setInterval(updateTimer,250)}}
+function updateTimer(){if(gameState==="playing"&&startedAt!==null)$("timer").textContent=formatTime(currentElapsed())}
+function stopTimer(){if(timerHandle){clearInterval(timerHandle);timerHandle=null}if(startedAt!==null){elapsedBefore+= (Date.now()-startedAt)/1000;startedAt=null}}
+function moveTile(index){if(!["ready","playing"].includes(gameState))return;const blank=blankIndex();if(!neighbors(blank).includes(index))return;startTimerIfNeeded();gameState="playing";[tiles[blank],tiles[index]]=[tiles[index],tiles[blank]];moves++;lastTile=blank;playSfx("move");$("moves").textContent=String(moves);renderBoard();if(isSolved()){finishGame();return}updateTimer()}
+function hint(){if(!["ready","playing"].includes(gameState))return;const blank=blankIndex();const opts=neighbors(blank);let best=opts[0],bestScore=Infinity;for(const idx of opts){const tile=tiles[idx];const targetRow=Math.floor(tile/(size)),targetCol=tile%size;const row=Math.floor(idx/size),col=idx%size;const score=Math.abs(row-targetRow)+Math.abs(col-targetCol);if(score<bestScore){bestScore=score;best=idx}}const btn=$("board").querySelector(`[data-index="${best}"]`);if(btn){btn.classList.add("hint");playSfx("hint");clearTimeout(hintTimer);hintTimer=setTimeout(()=>btn.classList.remove("hint"),1600)}else toast("試著移動空白格旁邊的方塊看看！")}
+function updateBest(){const rec=getRecords()[recordKey()];$("bestRecord").textContent=rec?`${formatTime(rec.time)} ・ ${rec.moves} 步`:"尚無紀錄"}
+function finishGame(){gameState="completing";stopTimer();$("timer").textContent=formatTime(elapsedBefore);const records=getRecords(),key=recordKey(),old=records[key];const newRec={time:Math.floor(elapsedBefore),moves,date:new Date().toISOString()};let isBest=!old||newRec.time<old.time||(newRec.time===old.time&&newRec.moves<old.moves);if(isBest){records[key]=newRec;safeSet(STORE_KEY,records)}updateBest();$("winImage").src=currentImage.src;$("winImage").alt=currentImage.name+"完整圖片";$("winTime").textContent=formatTime(elapsedBefore);$("winMoves").textContent=String(moves);$("recordMessage").textContent=isBest?"🏆 新紀錄！你為這張拼圖創下了最佳成績。":`🏆 目前最佳：${formatTime(records[key].time)} ・ ${records[key].moves} 步`;$("winMessage").textContent=`你完成了「${currentImage.name}」${size}×${size} 拼圖，做得好！`;playSfx("win");setTimeout(()=>{gameState="completed";$("winModal").classList.remove("hidden")},reducedMotion?0:420)}
+function restartGame(){if($("winModal").classList.contains("hidden")===false)$("winModal").classList.add("hidden");startGame();toast("已重新打亂，慢慢拼就好 ☁️")}
+function toast(message){const t=$("toast");t.textContent=message;t.classList.remove("hidden");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.add("hidden"),2100)}
+function showPreview(){$("modalImage").src=currentImage.src;$("modalImage").alt=currentImage.name+"完整原圖";$("previewModal").classList.remove("hidden")}
+function hidePreview(){$("previewModal").classList.add("hidden")}
+function openAudio(){const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return null;if(!audioContext)audioContext=new Ctx();if(audioContext.state==="suspended")audioContext.resume().catch(()=>{});return audioContext}
+function playTone(freq,duration=0.12,type="sine",volume=0.04,when=0){const ctx=openAudio();if(!ctx)return;const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,ctx.currentTime+when);gain.gain.setValueAtTime(0.0001,ctx.currentTime+when);gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),ctx.currentTime+when+.015);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+when+duration);osc.connect(gain);gain.connect(ctx.destination);osc.start(ctx.currentTime+when);osc.stop(ctx.currentTime+when+duration+.03)}
+function playSfx(kind){if(!sfxEnabled)return;if(kind==="move"){playTone(520,.07,"sine",.025);playTone(680,.055,"sine",.012,.035)}else if(kind==="hint"){playTone(660,.13,"sine",.035);playTone(880,.18,"sine",.025,.09)}else if(kind==="click"){playTone(420,.045,"sine",.014)}else if(kind==="win"){[523,659,784,1047].forEach((f,i)=>playTone(f,.32,"sine",.035,i*.11))}}
+function startMusic(){if(musicEnabled===false)return;const ctx=openAudio();if(!ctx)return;stopMusicNodes();const notes=[523.25,659.25,783.99,659.25,587.33,698.46,880,698.46];let n=0;musicTimer=setInterval(()=>{if(!musicEnabled||!audioContext)return;const f=notes[n%notes.length];playTone(f,.72,"sine",.012);if(n%4===0)playTone(f/2,.95,"triangle",.006,.02);n++},720); // soft music-box-like repeating phrase
+// very subtle synthesized ambience: quiet filtered low-level tones, not recorded environmental audio
+const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();osc.type="sine";osc.frequency.value=110;filter.type="lowpass";filter.frequency.value=220;gain.gain.value=.002;osc.connect(filter);filter.connect(gain);gain.connect(ctx.destination);osc.start();ambienceNode=osc;ambienceGain=gain}
+function stopMusicNodes(){if(musicTimer){clearInterval(musicTimer);musicTimer=null}if(ambienceNode){try{ambienceNode.stop()}catch(e){}ambienceNode=null;ambienceGain=null}}
+function toggleMusic(){musicEnabled=!musicEnabled;syncAudioButtons();if(musicEnabled)startMusic();else stopMusicNodes();safeSet(settingsKey,{musicEnabled,sfxEnabled});if(musicEnabled)playTone(660,.08,"sine",.015)}
+function toggleSfx(){sfxEnabled=!sfxEnabled;syncAudioButtons();safeSet(settingsKey,{musicEnabled,sfxEnabled});if(sfxEnabled)playSfx("click")}
+function syncAudioButtons(){$("musicToggle").setAttribute("aria-pressed",String(musicEnabled));$("sfxToggle").setAttribute("aria-pressed",String(sfxEnabled));$("musicState").textContent=musicEnabled?"開":"關";$("sfxState").textContent=sfxEnabled?"開":"關";$("musicInlineBtn").textContent=`🎵 音樂：${musicEnabled?"開":"關"}`}
+function init(){const saved=safeGet(settingsKey,{});musicEnabled=!!saved.musicEnabled;sfxEnabled=saved.sfxEnabled!==false;syncAudioButtons();
+$("startBtn").addEventListener("click",()=>{playSfx("click");showScreen("themeScreen")});
+document.querySelectorAll("[data-theme]").forEach(b=>b.addEventListener("click",()=>{playSfx("click");chooseTheme(b.dataset.theme)}));
+document.querySelectorAll("[data-size]").forEach(b=>b.addEventListener("click",()=>{playSfx("click");size=Number(b.dataset.size);startGame()}));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{playSfx("click");if(b.dataset.go==="home")goHome();else if(b.dataset.go==="theme")goTheme();else if(b.dataset.go==="images")goImages()}));
+$("hintBtn").addEventListener("click",hint);$("restartBtn").addEventListener("click",restartGame);$("changeImageBtn").addEventListener("click",()=>{goImages()});$("musicInlineBtn").addEventListener("click",toggleMusic);
+$("previewBtn").addEventListener("click",showPreview);$("closePreview").addEventListener("click",hidePreview);$("previewModal").addEventListener("click",e=>{if(e.target===$("previewModal"))hidePreview()});
+$("musicToggle").addEventListener("click",toggleMusic);$("sfxToggle").addEventListener("click",toggleSfx);
+$("playAgainBtn").addEventListener("click",()=>{$("winModal").classList.add("hidden");restartGame()});$("winChangeBtn").addEventListener("click",()=>{$("winModal").classList.add("hidden");goImages()});$("winMenuBtn").addEventListener("click",()=>{$("winModal").classList.add("hidden");goTheme()});
+$("winModal").addEventListener("click",e=>{if(e.target===$("winModal")){}});
+document.addEventListener("keydown",e=>{if(!$("previewModal").classList.contains("hidden")){if(e.key==="Escape")hidePreview();return}if(!$("winModal").classList.contains("hidden")){if(e.key==="Escape")$("winModal").classList.add("hidden");return}if(!$("gameScreen").classList.contains("hidden")&&["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){e.preventDefault();const blank=blankIndex(),r=Math.floor(blank/size),c=blank%size;let target=-1;if(e.key==="ArrowUp"&&r<size-1)target=blank+size;if(e.key==="ArrowDown"&&r>0)target=blank-size;if(e.key==="ArrowLeft"&&c<size-1)target=blank+1;if(e.key==="ArrowRight"&&c>0)target=blank-1;if(target>=0)moveTile(target)}});
+}
+init();
+</script>
+</body>
+</html>
